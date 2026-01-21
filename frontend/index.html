@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Resume Builder</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap");
+
+      :root {
+        font-family: "Manrope", system-ui, sans-serif;
+        line-height: 1.6;
+        font-weight: 400;
+        color: #1c1f2e;
+        background-color: #f8f9ff;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(circle at top, rgba(120, 160, 255, 0.2), transparent 60%),
+          radial-gradient(circle at 20% 10%, rgba(255, 205, 120, 0.25), transparent 55%),
+          radial-gradient(circle at 90% 20%, rgba(130, 240, 220, 0.2), transparent 55%),
+          #f8f9ff;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Playfair Display", serif;
+        letter-spacing: -0.01em;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .app {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+      }
+
+      .hero {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+        margin-bottom: 40px;
+      }
+
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 0.7rem;
+        color: #6a7396;
+        margin-bottom: 12px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.4rem, 4vw, 3.6rem);
+        margin: 0 0 12px;
+        color: #121528;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        color: #4b5475;
+        max-width: 520px;
+      }
+
+      .hero-card {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(90px, 1fr));
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(130, 150, 210, 0.3);
+        border-radius: 18px;
+        padding: 16px;
+        min-width: 320px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 18px 30px rgba(120, 140, 200, 0.2);
+      }
+
+      .hero-stat {
+        text-align: center;
+      }
+
+      .stat-label {
+        font-size: 0.75rem;
+        color: #6b7394;
+        margin: 0 0 6px;
+      }
+
+      .stat-value {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin: 0;
+        color: #1a1f37;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 28px;
+      }
+
+      .home {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+        margin-top: 12px;
+      }
+
+      .home-card {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(160, 175, 220, 0.35);
+        border-radius: 22px;
+        padding: 28px;
+        box-shadow: 0 18px 45px rgba(120, 140, 200, 0.18);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .home-card h2 {
+        margin: 0;
+        font-size: 1.6rem;
+        color: #14192e;
+      }
+
+      .home-card p {
+        margin: 0;
+        color: #5a6487;
+      }
+
+      .nav {
+        margin: 12px 0 20px;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(160, 175, 220, 0.35);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 18px 45px rgba(120, 140, 200, 0.25);
+      }
+
+      .panel-header h2 {
+        margin: 0 0 8px;
+        font-size: 1.35rem;
+        color: #14192e;
+      }
+
+      .panel-header p {
+        margin: 0 0 20px;
+        color: #5a6487;
+        font-size: 0.95rem;
+      }
+
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .field-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .field label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #6a7396;
+      }
+
+      .field input,
+      .field textarea {
+        border-radius: 12px;
+        border: 1px solid rgba(120, 140, 190, 0.35);
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #1a2035;
+        font-size: 0.95rem;
+      }
+
+      .field textarea {
+        resize: vertical;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+        flex-wrap: wrap;
+      }
+
+      .upload {
+        margin-top: 18px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .upload-card {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 18px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px dashed rgba(140, 160, 210, 0.6);
+      }
+
+      .upload-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #6a7396;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .upload input[type="file"] {
+        color: #2b3458;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(120, 140, 190, 0.35);
+        border-radius: 12px;
+        padding: 10px;
+      }
+
+      button {
+        border-radius: 999px;
+        padding: 12px 20px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 20px rgba(24, 30, 70, 0.4);
+      }
+
+      .primary {
+        background: linear-gradient(120deg, #2f80ed, #56ccf2);
+        color: #ffffff;
+      }
+
+      .ghost {
+        background: transparent;
+        border: 1px solid rgba(120, 140, 190, 0.6);
+        color: #2a3357;
+      }
+
+      .error {
+        margin-top: 12px;
+        color: #c0392b;
+      }
+
+      .preview {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(160deg, #ffffff 0%, #f1f4ff 100%);
+        border: 1px solid rgba(180, 190, 230, 0.8);
+      }
+
+      .resume {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .resume-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        border-bottom: 1px solid rgba(160, 175, 215, 0.4);
+        padding-bottom: 12px;
+      }
+
+      .resume-header h3 {
+        margin: 0;
+        font-size: 1.6rem;
+      }
+
+      .role {
+        margin: 4px 0 0;
+        color: #5d678b;
+      }
+
+      .contact {
+        text-align: right;
+        color: #5b6588;
+        font-size: 0.9rem;
+      }
+
+      .resume-section h4 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #6a7396;
+      }
+
+      .resume-section p {
+        margin: 0;
+        color: #29314a;
+      }
+
+      .resume-section ul {
+        margin: 0;
+        padding-left: 18px;
+        color: #2c3554;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chips span {
+        background: rgba(47, 128, 237, 0.1);
+        color: #2f4b8f;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+      }
+
+      .score {
+        border-top: 1px solid rgba(160, 175, 215, 0.4);
+        padding-top: 12px;
+      }
+
+      .score-value {
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 980px) {
+        .hero {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .home {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .hero-card {
+          width: 100%;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .field-row {
+          grid-template-columns: 1fr;
+        }
+
+        .resume-header {
+          flex-direction: column;
+        }
+
+        .contact {
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">AI Resume Builder</p>
+          <h1>Build a standout resume in minutes.</h1>
+          <p class="subtitle">
+            Craft, score, and refine your resume with a modern builder UI. Your data stays
+            local until you decide to export or score it.
+          </p>
+        </div>
+        <div class="hero-card" id="heroCard">
+          <div class="hero-stat">
+            <p class="stat-label">ATS Score</p>
+            <p class="stat-value" id="heroScore">Live</p>
+          </div>
+          <div class="hero-stat">
+            <p class="stat-label">Formats</p>
+            <p class="stat-value" id="heroMiddle">PDF</p>
+          </div>
+          <div class="hero-stat">
+            <p class="stat-label">Speed</p>
+            <p class="stat-value" id="heroRight">Fast</p>
+          </div>
+        </div>
+      </header>
+
+      <main class="home" id="homeView">
+        <div class="home-card">
+          <h2>Build from scratch</h2>
+          <p>
+            Follow a guided, multi-step builder with a live preview and instant ATS
+            feedback.
+          </p>
+          <button class="primary" type="button" id="startBuilder">
+            Start building
+          </button>
+        </div>
+        <div class="home-card">
+          <h2>Upload a resume</h2>
+          <p>
+            Upload your existing PDF or DOCX and receive an ATS score with improvement tips.
+          </p>
+          <button class="ghost" type="button" id="startUpload">Upload resume</button>
+        </div>
+      </main>
+
+      <div class="nav hidden" id="navBar">
+        <button class="ghost" type="button" id="backHome">Back to Home</button>
+      </div>
+
+      <main class="grid hidden" id="builderView">
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Resume Builder</h2>
+            <p>Fill in the fields and see a live preview on the right.</p>
+          </div>
+          <form class="form" id="resumeForm">
+            <div class="field-row">
+              <div class="field">
+                <label for="name">Full name</label>
+                <input id="name" name="name" value="Alex Rivera" />
+              </div>
+              <div class="field">
+                <label for="title">Role title</label>
+                <input id="title" name="title" value="Frontend Engineer" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" value="alex.rivera@email.com" />
+              </div>
+              <div class="field">
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" value="+1 (555) 123-4567" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="location">Location</label>
+              <input id="location" name="location" value="Austin, TX" />
+            </div>
+            <div class="field">
+              <label for="summary">Professional summary</label>
+              <textarea id="summary" name="summary" rows="4">
+Product-focused engineer with 4+ years building accessible, fast UIs for SaaS teams. I turn fuzzy ideas into shipped features with measurable impact.</textarea
+              >
+            </div>
+            <div class="field">
+              <label for="skills">Skills (comma separated)</label>
+              <input
+                id="skills"
+                name="skills"
+                value="React, TypeScript, Vite, CSS, Accessibility, Testing"
+              />
+            </div>
+            <div class="field">
+              <label for="experience">Experience</label>
+              <textarea id="experience" name="experience" rows="6">
+Frontend Engineer | Orbit Labs | 2022-Present
+- Led a design system rebuild that reduced UI defects by 35%.
+- Shipped an analytics dashboard used by 12k customers.
+
+Frontend Developer | Nova Studio | 2020-2022
+- Improved Lighthouse scores from 62 to 94 across core pages.
+- Built reusable chart components for product insights.</textarea
+              >
+            </div>
+            <div class="field">
+              <label for="education">Education</label>
+              <textarea id="education" name="education" rows="4">
+B.S. Computer Science | University of Texas | 2020
+- Graduated with honors. Coursework: HCI, Algorithms.</textarea
+              >
+            </div>
+            <div class="field">
+              <label for="projects">Projects</label>
+              <textarea id="projects" name="projects" rows="4">
+Resume Builder AI
+- Built a resume builder with ATS scoring and PDF export.
+- Integrated AI suggestions with rate limiting and retries.</textarea
+              >
+            </div>
+          </form>
+          <div class="actions">
+            <button class="primary" type="button" id="checkAts">Check ATS Score</button>
+            <button class="ghost" type="button" id="downloadPdf">Download PDF</button>
+          </div>
+          <p class="error hidden" id="builderError"></p>
+        </section>
+
+        <section class="panel preview" id="previewPanel">
+          <div class="panel-header">
+            <h2>Live Preview</h2>
+            <p>Copy ready content with clean formatting for ATS systems.</p>
+          </div>
+          <div class="resume">
+            <div class="resume-header">
+              <div>
+                <h3 id="previewName">Alex Rivera</h3>
+                <p class="role" id="previewTitle">Frontend Engineer</p>
+              </div>
+              <div class="contact">
+                <p id="previewEmail">alex.rivera@email.com</p>
+                <p id="previewPhone">+1 (555) 123-4567</p>
+                <p id="previewLocation">Austin, TX</p>
+              </div>
+            </div>
+            <section class="resume-section">
+              <h4>Summary</h4>
+              <p id="previewSummary"></p>
+            </section>
+            <section class="resume-section">
+              <h4>Skills</h4>
+              <div class="chips" id="previewSkills"></div>
+            </section>
+            <section class="resume-section">
+              <h4>Experience</h4>
+              <ul id="previewExperience"></ul>
+            </section>
+            <section class="resume-section">
+              <h4>Education</h4>
+              <ul id="previewEducation"></ul>
+            </section>
+            <section class="resume-section">
+              <h4>Projects</h4>
+              <ul id="previewProjects"></ul>
+            </section>
+            <section class="resume-section score hidden" id="previewScore">
+              <h4>ATS Feedback</h4>
+              <p class="score-value">Score: <span id="previewScoreValue">--</span></p>
+              <ul id="previewFeedback"></ul>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <main class="grid hidden" id="uploadView">
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Upload & Analyze</h2>
+            <p>Upload a resume and get ATS feedback with improvement tips.</p>
+          </div>
+          <div class="upload-card">
+            <div>
+              <label class="upload-label" for="resumeUpload">
+                Upload a resume (.txt, .pdf, .docx)
+              </label>
+              <input id="resumeUpload" type="file" accept=".txt,.md,.pdf,.docx" />
+            </div>
+            <button class="primary" type="button" id="analyzeUpload">Analyze Resume</button>
+          </div>
+          <p class="error hidden" id="uploadError"></p>
+        </section>
+
+        <section class="panel preview">
+          <div class="panel-header">
+            <h2>Analysis Results</h2>
+            <p>Review your score and the most impactful improvements.</p>
+          </div>
+          <div class="resume">
+            <section class="resume-section score">
+              <h4>ATS Feedback</h4>
+              <p class="score-value">Score: <span id="uploadScore">--</span></p>
+              <ul id="uploadFeedback">
+                <li>Upload a resume to see feedback.</li>
+              </ul>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const viewEls = {
+        home: document.getElementById("homeView"),
+        builder: document.getElementById("builderView"),
+        upload: document.getElementById("uploadView"),
+      };
+      const navBar = document.getElementById("navBar");
+      const heroScore = document.getElementById("heroScore");
+      const heroMiddle = document.getElementById("heroMiddle");
+      const heroRight = document.getElementById("heroRight");
+
+      const formState = {
+        name: "Alex Rivera",
+        title: "Frontend Engineer",
+        email: "alex.rivera@email.com",
+        phone: "+1 (555) 123-4567",
+        location: "Austin, TX",
+        summary:
+          "Product-focused engineer with 4+ years building accessible, fast UIs for SaaS teams. I turn fuzzy ideas into shipped features with measurable impact.",
+        skills: "React, TypeScript, Vite, CSS, Accessibility, Testing",
+        experience: `Frontend Engineer | Orbit Labs | 2022-Present
+- Led a design system rebuild that reduced UI defects by 35%.
+- Shipped an analytics dashboard used by 12k customers.
+
+Frontend Developer | Nova Studio | 2020-2022
+- Improved Lighthouse scores from 62 to 94 across core pages.
+- Built reusable chart components for product insights.`,
+        education:
+          "B.S. Computer Science | University of Texas | 2020\n- Graduated with honors. Coursework: HCI, Algorithms.",
+        projects:
+          "Resume Builder AI\n- Built a resume builder with ATS scoring and PDF export.\n- Integrated AI suggestions with rate limiting and retries.",
+      };
+
+      const preview = {
+        name: document.getElementById("previewName"),
+        title: document.getElementById("previewTitle"),
+        email: document.getElementById("previewEmail"),
+        phone: document.getElementById("previewPhone"),
+        location: document.getElementById("previewLocation"),
+        summary: document.getElementById("previewSummary"),
+        skills: document.getElementById("previewSkills"),
+        experience: document.getElementById("previewExperience"),
+        education: document.getElementById("previewEducation"),
+        projects: document.getElementById("previewProjects"),
+        scoreSection: document.getElementById("previewScore"),
+        scoreValue: document.getElementById("previewScoreValue"),
+        feedback: document.getElementById("previewFeedback"),
+      };
+
+      const builderError = document.getElementById("builderError");
+      const uploadError = document.getElementById("uploadError");
+      const uploadScore = document.getElementById("uploadScore");
+      const uploadFeedback = document.getElementById("uploadFeedback");
+
+      const parseLines = (value) =>
+        value
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+      const splitSkills = (value) =>
+        value
+          .split(",")
+          .map((skill) => skill.trim())
+          .filter(Boolean);
+
+      const renderList = (el, items) => {
+        el.innerHTML = items.map((item) => `<li>${item}</li>`).join("");
+      };
+
+      const renderChips = (el, items) => {
+        el.innerHTML = items.map((item) => `<span>${item}</span>`).join("");
+      };
+
+      const updatePreview = () => {
+        preview.name.textContent = formState.name || "Your Name";
+        preview.title.textContent = formState.title || "Your Title";
+        preview.email.textContent = formState.email || "";
+        preview.phone.textContent = formState.phone || "";
+        preview.location.textContent = formState.location || "";
+        preview.summary.textContent = formState.summary || "";
+        renderChips(preview.skills, splitSkills(formState.skills || ""));
+        renderList(preview.experience, parseLines(formState.experience || ""));
+        renderList(preview.education, parseLines(formState.education || ""));
+        renderList(preview.projects, parseLines(formState.projects || ""));
+      };
+
+      const calculateAts = () => {
+        let score = 50;
+        const feedback = [];
+
+        const missingContact = ["email", "phone", "location"].filter(
+          (key) => !(formState[key] || "").trim()
+        );
+        if (missingContact.length) {
+          feedback.push(`Add missing contact details: ${missingContact.join(", ")}.`);
+        } else {
+          score += 5;
+        }
+
+        if ((formState.summary || "").trim().length >= 80) {
+          score += 10;
+        } else {
+          feedback.push("Expand your summary to 2-3 concise sentences.");
+        }
+
+        const skillsCount = splitSkills(formState.skills || "").length;
+        if (skillsCount >= 6) {
+          score += 10;
+        } else {
+          feedback.push("Add at least 6 relevant skills.");
+        }
+
+        const expCount = parseLines(formState.experience || "").length;
+        if (expCount >= 4) {
+          score += 15;
+        } else {
+          feedback.push("Add more experience bullet points with impact metrics.");
+        }
+
+        const impactKeywords = [
+          "increased",
+          "reduced",
+          "improved",
+          "delivered",
+          "launched",
+          "owned",
+        ];
+        const expText = (formState.experience || "").toLowerCase();
+        if (impactKeywords.some((word) => expText.includes(word))) {
+          score += 5;
+        } else {
+          feedback.push("Add impact verbs (e.g., increased, improved, delivered) in experience.");
+        }
+
+        if ((formState.education || "").trim()) {
+          score += 5;
+        } else {
+          feedback.push("Include education details.");
+        }
+
+        if ((formState.projects || "").trim()) {
+          score += 5;
+        } else {
+          feedback.push("List 1-2 projects to showcase applied skills.");
+        }
+
+        score = Math.min(score, 100);
+        if (!feedback.length) {
+          feedback.push("Strong resume. Consider tailoring keywords to each job description.");
+        }
+
+        return { score, feedback };
+      };
+
+      const setView = (view) => {
+        Object.entries(viewEls).forEach(([key, el]) => {
+          el.classList.toggle("hidden", key !== view);
+        });
+        navBar.classList.toggle("hidden", view === "home");
+
+        if (view === "home") {
+          heroScore.textContent = "Live";
+          heroMiddle.textContent = "PDF";
+          heroRight.textContent = "Fast";
+        } else {
+          heroScore.textContent = preview.scoreValue.textContent || "--";
+          heroMiddle.textContent = "6";
+          heroRight.textContent = "PDF";
+        }
+      };
+
+      document.getElementById("startBuilder").addEventListener("click", () => {
+        setView("builder");
+      });
+
+      document.getElementById("startUpload").addEventListener("click", () => {
+        setView("upload");
+      });
+
+      document.getElementById("backHome").addEventListener("click", () => {
+        setView("home");
+      });
+
+      document.querySelectorAll("#resumeForm input, #resumeForm textarea").forEach((input) => {
+        input.addEventListener("input", (event) => {
+          formState[event.target.name] = event.target.value;
+          updatePreview();
+        });
+      });
+
+      document.getElementById("checkAts").addEventListener("click", () => {
+        const { score, feedback } = calculateAts();
+        preview.scoreSection.classList.remove("hidden");
+        preview.scoreValue.textContent = score;
+        renderList(preview.feedback, feedback);
+        heroScore.textContent = score;
+        builderError.classList.add("hidden");
+      });
+
+      document.getElementById("downloadPdf").addEventListener("click", () => {
+        builderError.textContent = "";
+        builderError.classList.add("hidden");
+        window.print();
+      });
+
+      document.getElementById("analyzeUpload").addEventListener("click", () => {
+        uploadScore.textContent = "--";
+        uploadFeedback.innerHTML = "<li>Upload analysis requires the backend.</li>";
+        uploadError.textContent =
+          "Upload scoring is disabled in standalone mode. Run the backend to enable it.";
+        uploadError.classList.remove("hidden");
+      });
+
+      updatePreview();
+      setView("home");
+    </script>
+  </body>
+</html>
