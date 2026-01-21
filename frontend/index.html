@@ -807,13 +807,42 @@ Frontend Developer | Nova Studio | 2020-2022
         });
       });
 
-      document.getElementById("checkAts").addEventListener("click", () => {
-        const { score, feedback } = calculateAts();
-        preview.scoreSection.classList.remove("hidden");
-        preview.scoreValue.textContent = score;
-        renderList(preview.feedback, feedback);
-        heroScore.textContent = score;
+      const callJson = async (path, payload) => {
+        const response = await fetch(path, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || "Request failed.");
+        }
+        return response.json();
+      };
+
+      document.getElementById("checkAts").addEventListener("click", async () => {
+        builderError.textContent = "";
         builderError.classList.add("hidden");
+
+        const payload = {
+          ...formState,
+          skills: splitSkills(formState.skills || ""),
+          experience: parseLines(formState.experience || ""),
+          education: parseLines(formState.education || ""),
+          projects: parseLines(formState.projects || ""),
+        };
+
+        try {
+          const data = await callJson("/.netlify/functions/score", payload);
+          preview.scoreSection.classList.remove("hidden");
+          preview.scoreValue.textContent = data.score ?? "--";
+          renderList(preview.feedback, data.feedback || []);
+          heroScore.textContent = data.score ?? "--";
+        } catch (error) {
+          builderError.textContent =
+            error.message || "Unable to reach the scoring service.";
+          builderError.classList.remove("hidden");
+        }
       });
 
       document.getElementById("downloadPdf").addEventListener("click", () => {
@@ -822,12 +851,49 @@ Frontend Developer | Nova Studio | 2020-2022
         window.print();
       });
 
-      document.getElementById("analyzeUpload").addEventListener("click", () => {
+      const readFileAsBase64 = (file) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const bytes = new Uint8Array(reader.result);
+            let binary = "";
+            bytes.forEach((byte) => {
+              binary += String.fromCharCode(byte);
+            });
+            resolve(btoa(binary));
+          };
+          reader.onerror = () => reject(reader.error);
+          reader.readAsArrayBuffer(file);
+        });
+
+      document.getElementById("analyzeUpload").addEventListener("click", async () => {
+        uploadError.textContent = "";
+        uploadError.classList.add("hidden");
         uploadScore.textContent = "--";
-        uploadFeedback.innerHTML = "<li>Upload analysis requires the backend.</li>";
-        uploadError.textContent =
-          "Upload scoring is disabled in standalone mode. Run the backend to enable it.";
-        uploadError.classList.remove("hidden");
+        uploadFeedback.innerHTML = "<li>Analyzing...</li>";
+
+        const fileInput = document.getElementById("resumeUpload");
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) {
+          uploadFeedback.innerHTML = "<li>Choose a resume file first.</li>";
+          uploadError.textContent = "Please select a file to analyze.";
+          uploadError.classList.remove("hidden");
+          return;
+        }
+
+        try {
+          const contentBase64 = await readFileAsBase64(file);
+          const data = await callJson("/.netlify/functions/score-file", {
+            filename: file.name,
+            contentBase64,
+          });
+          uploadScore.textContent = data.score ?? "--";
+          renderList(uploadFeedback, data.feedback || []);
+        } catch (error) {
+          uploadFeedback.innerHTML = "<li>Unable to score the uploaded resume.</li>";
+          uploadError.textContent = error.message || "Unable to score the uploaded resume.";
+          uploadError.classList.remove("hidden");
+        }
       });
 
       updatePreview();
